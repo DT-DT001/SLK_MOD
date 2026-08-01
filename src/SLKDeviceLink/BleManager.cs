@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class DiscoveredDevice
 {

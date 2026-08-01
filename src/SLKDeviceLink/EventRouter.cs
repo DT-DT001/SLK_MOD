@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class EventRouter
 {

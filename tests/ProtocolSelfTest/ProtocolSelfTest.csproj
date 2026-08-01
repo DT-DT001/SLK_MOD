@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\LLJDeviceLink\ProtocolPackets.cs" Link="ProtocolPackets.cs" />
-    <Compile Include="..\..\src\LLJDeviceLink\Models.cs" Link="Models.cs" />
+    <Compile Include="..\..\src\SLKDeviceLink\ProtocolPackets.cs" Link="ProtocolPackets.cs" />
+    <Compile Include="..\..\src\SLKDeviceLink\Models.cs" Link="Models.cs" />
     <Compile Remove="DeviceProfileStub.cs" />
   </ItemGroup>
 </Project>

@@ -3,14 +3,14 @@ using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 [BepInPlugin(Guid, Name, Version)]
 public sealed class Plugin : BasePlugin
 {
-    public const string Guid = "cn.lljmod.device-link";
-    public const string Name = "LLJ Device Link";
-    public const string Version = "1.5.0";
+    public const string Guid = "cn.slkmod.device-link";
+    public const string Name = "SLK Device Link";
+    public const string Version = "1.0.0";
 
     internal static ManualLogSource LogSource { get; private set; } = null!;
 

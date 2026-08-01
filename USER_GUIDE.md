@@ -99,5 +99,5 @@
 - 第一次使用先把强度和郊狼软上限设低，使用“测试此设备配置”逐步确认。
 - F12 是软件急停；仍应确保能直接关闭设备电源。
 - 持续状态采用短租约，每 0.2 秒续期；轮询失败、对象销毁或切换场景后会自动停止，而不会无限输出。
-- 配置保存在 `BepInEx/config/LLJDeviceLink/settings.json`。
+- 配置保存在 `BepInEx/config/SLKDeviceLink/settings.json`；从旧版升级时会自动读取原 `LLJDeviceLink` 配置。
 - 运行日志在 `BepInEx/LogOutput.log`。无输出时先检查设备状态、事件诊断、该事件是否勾选了设备，以及波形文件是否被日志报告为无效。

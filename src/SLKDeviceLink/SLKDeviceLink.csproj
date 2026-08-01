@@ -5,8 +5,8 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>LLJDeviceLink</AssemblyName>
-    <RootNamespace>LLJDeviceLink</RootNamespace>
+    <AssemblyName>SLKDeviceLink</AssemblyName>
+    <RootNamespace>SLKDeviceLink</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using BepInEx;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class ConfigStore
 {
@@ -21,7 +21,23 @@ public sealed class ConfigStore
 
     public ConfigStore()
     {
-        _path = Path.Combine(Paths.ConfigPath, "LLJDeviceLink", "settings.json");
+        _path = Path.Combine(Paths.ConfigPath, "SLKDeviceLink", "settings.json");
+        var legacyPath = Path.Combine(Paths.ConfigPath, "LLJDeviceLink", "settings.json");
+        var importedLegacy = false;
+        try
+        {
+            if (!File.Exists(_path) && File.Exists(legacyPath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
+                File.Copy(legacyPath, _path);
+                importedLegacy = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Plugin.LogSource.LogWarning($"旧 LLJ 配置自动迁移失败，将保留原文件：{ex.Message}");
+        }
+
         Settings = Load();
         var normalized = Settings.NormalizeGlobalSettings();
         var migrated = EventCatalog.MigrateBindings(Settings);
@@ -31,7 +47,9 @@ public sealed class ConfigStore
         }
         if (normalized || migrated) Save();
         if (migrated)
-            Plugin.LogSource.LogInfo("事件配置已升级为当前游戏目录；旧文件已保留为 settings.pre-1.5.0.json");
+            Plugin.LogSource.LogInfo("事件配置已升级为当前游戏目录；旧文件已保留为 settings.pre-schema5.json");
+        if (importedLegacy)
+            Plugin.LogSource.LogInfo("已将旧 LLJDeviceLink 配置导入 SLKDeviceLink；原配置文件仍保留作为备份");
     }
 
     private void BackupPreMigrationConfig()
@@ -39,7 +57,7 @@ public sealed class ConfigStore
         try
         {
             if (!File.Exists(_path)) return;
-            var backup = Path.Combine(Path.GetDirectoryName(_path)!, "settings.pre-1.5.0.json");
+            var backup = Path.Combine(Path.GetDirectoryName(_path)!, "settings.pre-schema5.json");
             if (!File.Exists(backup)) File.Copy(_path, backup);
         }
         catch (Exception ex)

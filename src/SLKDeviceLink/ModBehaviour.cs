@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class ModBehaviour : MonoBehaviour
 {
@@ -120,7 +120,7 @@ public sealed class ModBehaviour : MonoBehaviour
         {
             _windowRect.x = Math.Clamp(_windowRect.x, 0f, Math.Max(0f, Screen.width - _windowRect.width));
             _windowRect.y = Math.Clamp(_windowRect.y, 0f, Math.Max(0f, Screen.height - _windowRect.height));
-            _windowRect = GUI.Window(984213, _windowRect, (GUI.WindowFunction)DrawMainWindow, "LLJ 设备联动");
+            _windowRect = GUI.Window(984213, _windowRect, (GUI.WindowFunction)DrawMainWindow, "SLK 设备联动");
             if (Event.current is { } current && (current.isMouse || current.type == EventType.ScrollWheel))
                 current.Use();
         }

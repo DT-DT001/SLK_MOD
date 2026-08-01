@@ -4,7 +4,7 @@ using ExposureUnnoticed2.Scripts.Base;
 using HarmonyLib;
 using UnityEngine;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 internal static class InputBlockState
 {

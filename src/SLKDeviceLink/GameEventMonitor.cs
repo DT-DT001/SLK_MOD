@@ -5,7 +5,7 @@ using ExposureUnnoticed2.Object3D.Player.Scripts;
 using ExposureUnnoticed2.Scripts.InGame;
 using ExposureUnnoticed2.Scripts.Mission;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 /// <summary>
 /// Polls the game's generated IL2CPP interop types. Every stateful output is

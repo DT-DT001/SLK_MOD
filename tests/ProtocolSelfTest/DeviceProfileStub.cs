@@ -1,4 +1,4 @@
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class DeviceProfile
 {

@@ -1,4 +1,4 @@
-using LLJDeviceLink;
+using SLKDeviceLink;
 
 static void Equal(string expectedHex, byte[] actual, string name)
 {

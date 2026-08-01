@@ -1,7 +1,7 @@
 using System.Text.Json;
 using BepInEx;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class WaveformDefinition
 {

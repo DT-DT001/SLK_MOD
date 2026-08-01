@@ -3,7 +3,7 @@ using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Storage.Streams;
 
-namespace LLJDeviceLink;
+namespace SLKDeviceLink;
 
 public sealed class DeviceSession : IDisposable
 {
