@@ -1,0 +1,18 @@
+# Game installation and distributable package
+/Game/
+/mod_out/
+
+# Local dependency/cache state
+/.appdata/
+**/bin/
+**/obj/
+
+# IDE and user-specific files
+/.vs/
+/.idea/
+*.user
+*.suo
+
+# Locally generated release archives
+/*.zip
+/*.sha256
