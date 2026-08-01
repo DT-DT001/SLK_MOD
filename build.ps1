@@ -29,6 +29,18 @@ foreach ($rootName in @('mod_out', 'Game')) {
     Copy-Item -LiteralPath (Join-Path $build 'SLKDeviceLink.dll'), (Join-Path $build 'Microsoft.Windows.SDK.NET.dll'), (Join-Path $build 'WinRT.Runtime.dll') -Destination $plugins -Force
     $waveforms = Join-Path $root 'waveforms'
     New-Item -ItemType Directory -Force $waveforms | Out-Null
+    $waveformSource = Join-Path $projectRoot 'waveforms'
+    foreach ($pulseFile in Get-ChildItem -LiteralPath $waveformSource -Filter '*.pulse' -Recurse) {
+        $closeBracket = $pulseFile.BaseName.IndexOf(']')
+        if ($pulseFile.BaseName.StartsWith('[') -and $closeBracket -gt 0) {
+            $legacyName = $pulseFile.BaseName.Substring($closeBracket + 1) + '.json'
+            $relativeDirectory = $pulseFile.DirectoryName.Substring($waveformSource.Length).TrimStart([IO.Path]::DirectorySeparatorChar)
+            $legacyFile = Join-Path (Join-Path $waveforms $relativeDirectory) $legacyName
+            if (Test-Path -LiteralPath $legacyFile) {
+                Remove-Item -LiteralPath $legacyFile -Force
+            }
+        }
+    }
     Copy-Item -Path (Join-Path $projectRoot 'waveforms\*') -Destination $waveforms -Recurse -Force
 }
 

@@ -190,7 +190,9 @@ public sealed class ModBehaviour : MonoBehaviour
         if (Button(292, 76, 145, 32, "重新加载波形"))
         {
             _waveforms.Load();
-            SetNotice($"已加载 {_waveforms.All.Count} 个波形");
+            SetNotice(_waveforms.LastFailedFileCount == 0
+                ? $"已加载 {_waveforms.All.Count} 个波形"
+                : $"已加载 {_waveforms.All.Count} 个波形，{_waveforms.LastFailedFileCount} 个文件失败（详见日志）");
         }
         Label(450, 82, 450, 24, $"扫描：{(_ble.IsScanning ? $"剩余 {_ble.ScanSecondsRemaining} 秒" : "未运行")}　发现：{_ble.Discovered.Count}　连接：{_ble.Sessions.Count}");
 

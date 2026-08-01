@@ -33,6 +33,44 @@ Equal("B00000000A0A0A0A0014283C141414140A141E28", ProtocolPackets.CoyoteFrame(0,
     new byte[] { 10, 10, 10, 10, 0, 20, 40, 60 },
     new byte[] { 20, 20, 20, 20, 10, 20, 30, 40 }, false, false), "郊狼等待 B1 时仅发送波形");
 
+var basicPulse = CoyotePulseFile.Parse("Dungeonlab+pulse:0,1,16=0,0,0,1,1/0.00-1,100.00-1", "pulse-basic", "基础波形");
+EqualValue(2, basicPulse.Frames.Count, ".pulse 完整播放最短 0.2 秒脉冲元");
+Equal("0A0A0A0A00000000", basicPulse.Frames[0], ".pulse 第一个 100 ms 强度点");
+Equal("0A0A0A0A64646464", basicPulse.Frames[1], ".pulse 第二个 100 ms 强度点");
+
+var fastPulse = CoyotePulseFile.Parse("Dungeonlab+pulse:0,4,16=0,10,0,3,1/0.00-1,33.00-1,67.00-1,100.00-1", "pulse-fast", "四倍速渐变");
+EqualValue(1, fastPulse.Frames.Count, ".pulse 四倍速按 25 ms 展开");
+Equal("0A0D111400214364", fastPulse.Frames[0], ".pulse 元内频率渐变和强度点映射");
+
+var slowPulse = CoyotePulseFile.Parse("Dungeonlab+pulse:0,1,16=83,83,0,1,1/20.00-1,20.00-1", "pulse-slow", "低频波形");
+Equal("F0F0F0F014141414", slowPulse.Frames[0], ".pulse 1000 ms 频率编码到协议值 240");
+
+var pulseIdentity = CoyotePulseFile.Identity("郊狼/[c3-heartbeat]心跳.pulse");
+EqualValue("c3-heartbeat", pulseIdentity.Id, ".pulse 文件名显式稳定 id");
+EqualValue("心跳", pulseIdentity.Name, ".pulse 文件名显示名称");
+var generatedPulseId = CoyotePulseFile.Identity("郊狼/用户导出波形.pulse").Id;
+EqualValue(true, generatedPulseId.StartsWith("c3-pulse-", StringComparison.Ordinal) && generatedPulseId.Length == 21, ".pulse 普通文件名生成稳定 id");
+
+var invalidPulseRejected = false;
+try
+{
+    CoyotePulseFile.Parse("Dungeonlab+pulse:0,1,16=0,0,0,1,1/0.00-1,101.00-1", "invalid", "越界");
+}
+catch (InvalidDataException)
+{
+    invalidPulseRejected = true;
+}
+EqualValue(true, invalidPulseRejected, ".pulse 越界强度会被拒绝并报告导入失败");
+
+var waveformRoot = Path.Combine(Environment.CurrentDirectory, "waveforms");
+var builtInPulseFiles = Directory.EnumerateFiles(Path.Combine(waveformRoot, "郊狼"), "*.pulse").ToList();
+var builtInPulses = builtInPulseFiles.Select(file => CoyotePulseFile.Load(waveformRoot, file)).ToList();
+EqualValue(20, builtInPulses.Count, "20 个内置郊狼波形均已转换为 .pulse");
+EqualValue(true,
+    builtInPulses.All(waveform => waveform.Frames.Count > 0) &&
+    builtInPulses.Select(waveform => waveform.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() == builtInPulses.Count,
+    "内置 .pulse 全部可导入且 id 唯一");
+
 var penaltyAction = new DeviceActionConfig
 {
     BaseIntensity = 10,

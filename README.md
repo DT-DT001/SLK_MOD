@@ -10,7 +10,7 @@
 - 每个事件可选择多台已连接设备；每台设备分别保存强度、动态强度上限、叠加量、时间、通道/马达与波形。
 - 多个游戏道具按独立来源聚合，关闭一个道具不会停止其他仍在运行的道具。
 - 所有强度输入在配置层、输出计算层和协议封包层三重限制：役次元电击器 0–180、郊狼 3.0 0–200、役次元飞机杯/跳蛋 0–20。
-- 启动时递归加载游戏根目录 `waveforms` 下的役次元、郊狼和玩具 JSON 波形。
+- 启动时递归加载游戏根目录 `waveforms`：郊狼使用 DG-LAB 3.x 的 `.pulse`，役次元和玩具使用 JSON。
 - F8 打开配置窗口，F12 全设备急停。窗口关闭时仅保留右上角 350 × 36 状态条。
 
 ## 设备识别
@@ -40,6 +40,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 - `EventRouter.cs`：每事件、每设备、每来源的请求路由与短租约故障保护
 - `ModBehaviour.cs`：低遮挡状态条、设备连接、事件配置与诊断界面
 - `InputBlockPatches.cs`：F8 窗口打开时隔离玩家、相机和交互输入
-- `WaveformLibrary.cs`：递归加载并校验 `waveforms/*.json`
+- `CoyotePulseFile.cs` / `WaveformLibrary.cs`：解析 `.pulse` 小节并展开为 25 ms 郊狼采样，递归加载和校验全部波形
 
 玩家说明见 `mod_out/SLKDeviceLink-README.zh-CN.md`。

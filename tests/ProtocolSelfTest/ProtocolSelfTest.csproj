@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="..\..\src\SLKDeviceLink\ProtocolPackets.cs" Link="ProtocolPackets.cs" />
     <Compile Include="..\..\src\SLKDeviceLink\Models.cs" Link="Models.cs" />
+    <Compile Include="..\..\src\SLKDeviceLink\CoyotePulseFile.cs" Link="CoyotePulseFile.cs" />
     <Compile Remove="DeviceProfileStub.cs" />
   </ItemGroup>
 </Project>
