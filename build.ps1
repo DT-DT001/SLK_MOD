@@ -33,11 +33,18 @@ foreach ($rootName in @('mod_out', 'Game')) {
     foreach ($pulseFile in Get-ChildItem -LiteralPath $waveformSource -Filter '*.pulse' -Recurse) {
         $closeBracket = $pulseFile.BaseName.IndexOf(']')
         if ($pulseFile.BaseName.StartsWith('[') -and $closeBracket -gt 0) {
+            $idPrefix = $pulseFile.BaseName.Substring(0, $closeBracket + 1)
             $legacyName = $pulseFile.BaseName.Substring($closeBracket + 1) + '.json'
             $relativeDirectory = $pulseFile.DirectoryName.Substring($waveformSource.Length).TrimStart([IO.Path]::DirectorySeparatorChar)
-            $legacyFile = Join-Path (Join-Path $waveforms $relativeDirectory) $legacyName
+            $targetDirectory = Join-Path $waveforms $relativeDirectory
+            $legacyFile = Join-Path $targetDirectory $legacyName
             if (Test-Path -LiteralPath $legacyFile) {
                 Remove-Item -LiteralPath $legacyFile -Force
+            }
+            if (Test-Path -LiteralPath $targetDirectory) {
+                Get-ChildItem -LiteralPath $targetDirectory -Filter '*.pulse' -File |
+                    Where-Object { $_.BaseName.StartsWith($idPrefix) -and $_.Name -ne $pulseFile.Name } |
+                    Remove-Item -Force
             }
         }
     }

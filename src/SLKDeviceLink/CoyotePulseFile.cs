@@ -155,28 +155,25 @@ public static class CoyotePulseFile
         var elementSamples = strengths.Length * samplesPerPoint;
         var targetSamples = (int)Math.Ceiling(SectionTimeValues[durationIndex] * 40);
         var elementCount = Math.Max(1, (int)Math.Ceiling(targetSamples / (double)elementSamples));
-        var totalSamples = elementSamples * elementCount;
-        var startFrequency = FrequencySliderValues[startIndex];
-        var endFrequency = FrequencySliderValues[endIndex];
+        var totalPoints = strengths.Length * elementCount;
 
         for (var elementIndex = 0; elementIndex < elementCount; elementIndex++)
         {
             for (var pointIndex = 0; pointIndex < strengths.Length; pointIndex++)
             {
-                for (var subSample = 0; subSample < samplesPerPoint; subSample++)
+                var sectionPoint = elementIndex * strengths.Length + pointIndex;
+                var progress = mode switch
                 {
-                    var elementPosition = pointIndex * samplesPerPoint + subSample;
-                    var sectionPosition = elementIndex * elementSamples + elementPosition;
-                    var progress = mode switch
-                    {
-                        2 => Progress(sectionPosition, totalSamples),
-                        3 => Progress(elementPosition, elementSamples),
-                        4 => Progress(elementIndex, elementCount),
-                        _ => 0d
-                    };
-                    var rawFrequency = (int)Math.Round(startFrequency + (endFrequency - startFrequency) * progress);
-                    output.Add((EncodeFrequency(rawFrequency), strengths[pointIndex]));
-                }
+                    2 => Progress(sectionPoint, totalPoints),
+                    3 => Progress(pointIndex, strengths.Length),
+                    4 => Progress(elementIndex, elementCount),
+                    _ => 0d
+                };
+                // APP 在频率滑块索引上做渐变，再查表得到真实周期；同一强度点内的 25 ms 子采样保持相同频率。
+                var sliderIndex = (int)Math.Floor(startIndex + (endIndex - startIndex) * progress + 1e-9);
+                var encodedFrequency = EncodeFrequency(FrequencySliderValues[Math.Clamp(sliderIndex, 0, FrequencySliderValues.Length - 1)]);
+                for (var subSample = 0; subSample < samplesPerPoint; subSample++)
+                    output.Add((encodedFrequency, strengths[pointIndex]));
             }
         }
     }

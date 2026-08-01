@@ -14,6 +14,17 @@ static void EqualValue<T>(T expected, T actual, string name) where T : IEquatabl
     Console.WriteLine($"PASS {name}: {actual}");
 }
 
+static List<string> ExampleFrames(string markdown, string heading)
+{
+    var start = markdown.IndexOf($"### {heading}", StringComparison.Ordinal);
+    if (start < 0) throw new Exception($"协议示例缺少 {heading} 波形");
+    var end = markdown.IndexOf("### ", start + heading.Length + 4, StringComparison.Ordinal);
+    var section = end < 0 ? markdown[start..] : markdown[start..end];
+    return System.Text.RegularExpressions.Regex.Matches(section, @"bytes\s*=\s*([0-9A-Fa-f]{16})")
+        .Select(match => match.Groups[1].Value.ToUpperInvariant())
+        .ToList();
+}
+
 Equal("3511030100B4010000FF", ProtocolPackets.YcyV1Fixed(true, true, 180, 1), "役次元一代固定模式和 180 上限");
 Equal("35110200B4010000B40200B3", ProtocolPackets.YcyV2Realtime(180, 1, 0, 180, 2, 0), "役次元二代实时双通道");
 Equal("351205101470", ProtocolPackets.ToyRate(5, 16, 99), "役次元玩具 1-20 限制和校验");
@@ -40,7 +51,7 @@ Equal("0A0A0A0A64646464", basicPulse.Frames[1], ".pulse 第二个 100 ms 强度�
 
 var fastPulse = CoyotePulseFile.Parse("Dungeonlab+pulse:0,4,16=0,10,0,3,1/0.00-1,33.00-1,67.00-1,100.00-1", "pulse-fast", "四倍速渐变");
 EqualValue(1, fastPulse.Frames.Count, ".pulse 四倍速按 25 ms 展开");
-Equal("0A0D111400214364", fastPulse.Frames[0], ".pulse 元内频率渐变和强度点映射");
+Equal("0A0D101400214364", fastPulse.Frames[0], ".pulse 在频率滑块索引上执行元内渐变");
 
 var slowPulse = CoyotePulseFile.Parse("Dungeonlab+pulse:0,1,16=83,83,0,1,1/20.00-1,20.00-1", "pulse-slow", "低频波形");
 Equal("F0F0F0F014141414", slowPulse.Frames[0], ".pulse 1000 ms 频率编码到协议值 240");
@@ -70,6 +81,14 @@ EqualValue(true,
     builtInPulses.All(waveform => waveform.Frames.Count > 0) &&
     builtInPulses.Select(waveform => waveform.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() == builtInPulses.Count,
     "内置 .pulse 全部可导入且 id 唯一");
+
+var protocolExample = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "协议", "郊狼example.md"));
+foreach (var (heading, waveformId) in new[] { ("呼吸", "c3-soft-breath"), ("潮汐", "c3-tide-rise") })
+{
+    var expectedFrames = ExampleFrames(protocolExample, heading);
+    var actualFrames = builtInPulses.Single(waveform => waveform.Id == waveformId).Frames.Select(Convert.ToHexString).ToList();
+    EqualValue(string.Join(",", expectedFrames), string.Join(",", actualFrames), $"内置{heading}逐帧匹配郊狼example.md");
+}
 
 var penaltyAction = new DeviceActionConfig
 {

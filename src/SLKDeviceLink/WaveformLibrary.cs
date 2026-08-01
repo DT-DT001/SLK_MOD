@@ -54,7 +54,14 @@ public sealed class WaveformLibrary
                         ? LoadPulse(root, file)
                         : LoadJson(file);
                     if (_all.Any(item => string.Equals(item.Id, waveform.Id, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        if (Path.GetExtension(file).Equals(".json", StringComparison.OrdinalIgnoreCase) && waveform.Kind == WaveformKind.Coyote)
+                        {
+                            Plugin.LogSource.LogInfo($"旧郊狼 JSON 已由同 id 的 .pulse 替代：{file}");
+                            continue;
+                        }
                         throw new InvalidDataException($"波形 id 重复：{waveform.Id}");
+                    }
                     _all.Add(waveform);
                 }
                 catch (Exception ex)
