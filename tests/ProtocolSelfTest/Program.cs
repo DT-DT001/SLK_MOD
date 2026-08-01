@@ -76,11 +76,23 @@ EqualValue(true, invalidPulseRejected, ".pulse 越界强度会被拒绝并报告
 var waveformRoot = Path.Combine(Environment.CurrentDirectory, "waveforms");
 var builtInPulseFiles = Directory.EnumerateFiles(Path.Combine(waveformRoot, "郊狼"), "*.pulse").ToList();
 var builtInPulses = builtInPulseFiles.Select(file => CoyotePulseFile.Load(waveformRoot, file)).ToList();
-EqualValue(20, builtInPulses.Count, "20 个内置郊狼波形均已转换为 .pulse");
+EqualValue(25, builtInPulses.Count, "20 个内置波形和 5 个官方样本均使用 .pulse");
 EqualValue(true,
     builtInPulses.All(waveform => waveform.Frames.Count > 0) &&
     builtInPulses.Select(waveform => waveform.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() == builtInPulses.Count,
     "内置 .pulse 全部可导入且 id 唯一");
+
+var officialPulseFiles = builtInPulseFiles
+    .Where(file => Path.GetFileName(file).StartsWith("127-") || Path.GetFileName(file).StartsWith("128-"))
+    .ToList();
+EqualValue(5, officialPulseFiles.Count, "新增 5 个官方可用 .pulse 样本完整");
+EqualValue(true,
+    officialPulseFiles.All(file => CoyotePulseFile.Load(waveformRoot, file).Frames.Count > 0),
+    "5 个官方样本全部通过 MOD 实际解析器");
+var headerlessPulse = officialPulseFiles.Single(file => Path.GetFileName(file) == "128-进1.pulse");
+EqualValue(true,
+    !File.ReadAllText(headerlessPulse).Contains('=') && CoyotePulseFile.Load(waveformRoot, headerlessPulse).Frames.Count > 0,
+    "无全局头的官方 .pulse 变体可直接导入");
 
 var protocolExample = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "协议", "郊狼example.md"));
 foreach (var (heading, waveformId) in new[] { ("呼吸", "c3-soft-breath"), ("潮汐", "c3-tide-rise") })

@@ -59,20 +59,33 @@ public static class CoyotePulseFile
 
         var body = data[Prefix.Length..];
         var equalIndex = body.IndexOf('=');
-        if (equalIndex < 0)
-            throw new InvalidDataException(".pulse 缺少波形描述与小节之间的 = 分隔符");
+        var restTenths = 0;
+        var speed = 1;
+        string sectionBody;
+        if (equalIndex >= 0)
+        {
+            var global = Split(body[..equalIndex], ',');
+            if (global.Length != 3)
+                throw new InvalidDataException(".pulse 波形描述必须包含休息时长、速度倍率和兼容参数");
 
-        var global = Split(body[..equalIndex], ',');
-        if (global.Length != 3)
-            throw new InvalidDataException(".pulse 波形描述必须包含休息时长、速度倍率和兼容参数");
+            restTenths = ParseInt(global[0], "休息时长", 0, 36000);
+            speed = ParseInt(global[1], "速度倍率", 1, 4);
+            if (speed is not (1 or 2 or 4))
+                throw new InvalidDataException(".pulse 速度倍率只能是 1、2 或 4");
+            _ = ParseInt(global[2], "兼容参数", 0, int.MaxValue);
+            sectionBody = body[(equalIndex + 1)..];
+        }
+        else if (body.Contains('/'))
+        {
+            // 一部分 APP 可正常导入的文件省略全局头，直接以首个小节开头；按无休息、1 倍速解释。
+            sectionBody = body;
+        }
+        else
+        {
+            throw new InvalidDataException(".pulse 既没有全局头，也没有有效的小节数据");
+        }
 
-        var restTenths = ParseInt(global[0], "休息时长", 0, 36000);
-        var speed = ParseInt(global[1], "速度倍率", 1, 4);
-        if (speed is not (1 or 2 or 4))
-            throw new InvalidDataException(".pulse 速度倍率只能是 1、2 或 4");
-        _ = ParseInt(global[2], "兼容参数", 0, int.MaxValue);
-
-        var sectionTexts = body[(equalIndex + 1)..]
+        var sectionTexts = sectionBody
             .Split(new[] { "+section+" }, StringSplitOptions.None);
         if (sectionTexts.Length is 0 or > MaxSections)
             throw new InvalidDataException($".pulse 小节数量必须在 1-{MaxSections} 之间");
