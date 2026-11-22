@@ -45,3 +45,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 - `CoyotePulseFile.cs` / `WaveformLibrary.cs`：解析 `.pulse` 小节并展开为 25 ms 郊狼采样，递归加载和校验全部波形
 
 玩家说明见 `mod_out/SLKDeviceLink-README.zh-CN.md`。
+
+## 维护与反馈
+
+本仓库由 [DarkThunder（@DT-DT001）](https://github.com/DT-DT001) 维护。问题和建议可提交到 [Issues](https://github.com/DT-DT001/SLK_MOD/issues)。
